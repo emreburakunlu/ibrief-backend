@@ -162,3 +162,77 @@ def test_calendar_window():
     h = calendar_data.holidays(date(2026, 10, 27))
     assert any(x["country"] == "TR" and x["date"] == "2026-10-29" for x in h)
     assert set(h[0]) == {"id", "date", "country", "name"}
+
+
+def _it(i, title, source, minutes, summary="s"):
+    from datetime import timedelta
+    return {"id": str(i), "title": title, "source": source, "url": f"https://x/{i}", "publishedAt": "",
+            "summary": summary, "lang": "en", "_when": NOW - timedelta(minutes=minutes), "_weight": 1.0}
+
+
+def test_cap_fallback_story_not_dropped():
+    # fill the cap with higher-scoring distinct stories, then a lone cluster led by capped source
+    items = [_it(i, WORDS[i], "Big", i) for i in range(news.PER_SOURCE_CAP)]
+    items += [_it(50 + i, WORDS[i], "Other", 60 + i) for i in range(news.PER_SOURCE_CAP)]  # coverage boost
+    items += [_it(200, "Central bank surprises markets with rate move", "Big", 400),
+              _it(201, "Central bank surprises markets with rate move", "Small", 500)]
+    ranked = news.dedupe_and_rank(items, NOW)
+    story = [r for r in ranked if r["title"].startswith("Central bank")]
+    assert len(story) == 1 and story[0]["source"] == "Small"
+
+
+def test_turkey_daily_excludes_politics_by_title_similarity():
+    politics = Feed("P", "https://p/rss", lang="tr")
+    daily = Feed("D", "https://d/rss", lang="tr")
+    rss = lambda title, n: (  # noqa: E731
+        f'<?xml version="1.0"?><rss version="2.0"><channel><item><title>{title}</title>'
+        f'<link>https://site/{n}</link><pubDate>Tue, 27 Oct 2026 07:00:00 GMT</pubDate></item></channel></rss>').encode()
+    parsed = {
+        "https://p/rss": news.parse_entries(rss("Meclis yeni anayasa taslağını görüşmeye başladı", "a"), politics, NOW),
+        "https://d/rss": news.parse_entries(rss("Meclis yeni anayasa taslağını görüşmeye başladı!", "b"), daily, NOW)
+        + news.parse_entries(rss("Hava durumu yarın yağmurlu", "c"), daily, NOW),
+    }
+    ranked_p = news.dedupe_and_rank(news.collect_category([politics], parsed)[0], NOW)
+    norms = [news.normalize_title(i["title"]) for i in ranked_p]
+    items, _ = news.collect_category([daily], parsed)
+    ranked_d = news.dedupe_and_rank(items, NOW, exclude_norms=norms)
+    assert [i["title"] for i in ranked_d] == ["Hava durumu yarın yağmurlu"]
+
+
+def test_feeds_parsed_once(monkeypatch):
+    calls = []
+    real = news.parse_entries
+    monkeypatch.setattr(news, "parse_entries", lambda c, f, n: (calls.append(f.url), real(c, f, n))[1])
+    news.build_news(fetch=lambda f: XML, now=NOW)
+    assert len(calls) == len(set(calls))
+
+
+def test_main_fails_when_all_news_failed(monkeypatch, tmp_path):
+    def boom(now):
+        raise RuntimeError("x")
+    real = build.build_brief
+    monkeypatch.setattr(build, "build_brief", lambda: real(now=NOW, news_builder=boom))
+    monkeypatch.setattr(build, "write_site", lambda *a, **k: (_ for _ in ()).throw(AssertionError("wrote")))
+    q = {"symbol": "X", "name": "X", "price": 1.0, "change": 0.0, "changePct": 0.0, "asOf": "2026-10-27T00:00:00Z"}
+    for name, val in (("build_gold", q), ("build_indices", [q]), ("build_crypto", [q]), ("build_usdtry", q)):
+        monkeypatch.setattr(markets, name, lambda v=val: v)
+    assert build.main() == 1
+
+
+def test_main_succeeds_on_partial_news_failure(monkeypatch, tmp_path):
+    real, real_write = build.build_brief, build.write_site
+    partial = lambda now: {"finance": ([], "ok"), **{c: (None, "failed") for c in ("globalPolitics", "turkeyPolitics", "turkeyDaily")}}  # noqa: E731
+    monkeypatch.setattr(build, "build_brief", lambda: real(now=NOW, news_builder=partial))
+    monkeypatch.setattr(build, "write_site", lambda b, d=tmp_path: real_write(b, d))
+    assert build.main() == 0
+
+
+def test_frankfurter_asof_dst():
+    summer = markets.parse_frankfurter_range({"rates": {"2026-10-23": {"TRY": 49.0}}})
+    winter = markets.parse_frankfurter_range({"rates": {"2026-12-01": {"TRY": 49.0}}})
+    assert summer["asOf"] == "2026-10-23T14:00:00Z" and winter["asOf"] == "2026-12-01T15:00:00Z"
+
+
+def test_summary_has_no_entities():
+    out = news.strip_html("Tom &amp;amp; Jerry &quot;x&quot; &#39;y&#39; &lt;b&gt;z")
+    assert "&amp;" not in out and "&quot;" not in out and "&#39;" not in out

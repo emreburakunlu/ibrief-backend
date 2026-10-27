@@ -1,0 +1,27 @@
+name: Keepalive
+
+# GitHub disables scheduled workflows after 60 days without repo activity.
+# This pushes a timestamp commit once a month. build.yml has no `push` trigger,
+# so this commit cannot start a build (and GITHUB_TOKEN pushes never trigger workflows anyway).
+
+on:
+  schedule:
+    - cron: "0 5 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Commit keepalive timestamp
+        run: |
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .keepalive
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .keepalive
+          git commit -m "chore: keepalive $(cat .keepalive)"
+          git push

@@ -18,7 +18,7 @@ from .feeds import FEEDS, TIMEOUT, USER_AGENT, Feed
 
 RECENCY_HOURS = 36
 CATEGORY_CAP = 15
-PER_SOURCE_CAP = 5
+PER_SOURCE_CAP = 3
 SUMMARY_MAX = 300
 TRACKING_PARAMS = {"fbclid", "gclid", "ocid", "cmpid", "ref", "ito", "at_medium", "at_campaign"}
 
@@ -32,7 +32,11 @@ def strip_html(text: str | None, limit: int = SUMMARY_MAX) -> str:
         return ""
     text = re.sub(r"(?is)<(script|style).*?</\1>", " ", text)
     text = _TAG_RE.sub(" ", text)
-    text = html.unescape(text)
+    for _ in range(3):  # also resolves double-escaped entities like &amp;amp;
+        unescaped = html.unescape(text)
+        if unescaped == text:
+            break
+        text = unescaped
     text = _WS_RE.sub(" ", text).strip()
     if len(text) > limit:
         text = text[: limit - 1].rsplit(" ", 1)[0].rstrip(" ,;:.-") + "…"
@@ -86,11 +90,10 @@ def iso(dt: datetime) -> str:
     return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def parse_feed(content: bytes, feed: Feed, now: datetime) -> list[dict]:
-    """Turn raw feed bytes into normalised items inside the recency window."""
+def parse_entries(content: bytes, feed: Feed, now: datetime) -> list[dict]:
+    """Parse raw feed bytes once into normalised items inside the recency window (no keyword filter)."""
     parsed = feedparser.parse(content)
     cutoff = now - timedelta(hours=RECENCY_HOURS)
-    kw = re.compile(feed.keywords) if feed.keywords else None
     out = []
     for e in parsed.entries:
         title = strip_html(e.get("title"), 200)
@@ -100,19 +103,33 @@ def parse_feed(content: bytes, feed: Feed, now: datetime) -> list[dict]:
             continue
         if when < cutoff or when > now + timedelta(hours=1):
             continue
-        summary = strip_html(e.get("summary") or e.get("description"))
-        if kw and not kw.search(f"{title} {summary}"):
-            continue
         out.append({
             "id": item_id(link), "title": title, "source": feed.source, "url": link.strip(),
-            "publishedAt": iso(when), "summary": summary, "lang": feed.lang,
-            "_when": when, "_weight": feed.weight,
+            "publishedAt": iso(when), "summary": strip_html(e.get("summary") or e.get("description")),
+            "lang": feed.lang, "_when": when, "_weight": feed.weight,
         })
     return out
 
 
-def dedupe_and_rank(items: list[dict], now: datetime, cap: int = CATEGORY_CAP) -> list[dict]:
-    """Cluster near-duplicate titles, score clusters, return up to `cap` public items."""
+def apply_keywords(items: list[dict], feed: Feed) -> list[dict]:
+    if not feed.keywords:
+        return items
+    kw = re.compile(feed.keywords)
+    return [i for i in items if kw.search(f"{i['title']} {i['summary']}")]
+
+
+def parse_feed(content: bytes, feed: Feed, now: datetime) -> list[dict]:
+    """Turn raw feed bytes into normalised items inside the recency window."""
+    return apply_keywords(parse_entries(content, feed, now), feed)
+
+
+def dedupe_and_rank(items: list[dict], now: datetime, cap: int = CATEGORY_CAP,
+                    exclude_norms: list[str] | None = None) -> list[dict]:
+    """Cluster near-duplicate titles, score clusters, return up to `cap` public items.
+
+    A cluster's lead is its newest member from a source that is not yet at PER_SOURCE_CAP;
+    if every member's source is capped the story is dropped.
+    """
     clusters: list[dict] = []
     seen_ids: set[str] = set()
     for it in sorted(items, key=lambda x: x["_when"], reverse=True):
@@ -120,32 +137,37 @@ def dedupe_and_rank(items: list[dict], now: datetime, cap: int = CATEGORY_CAP) -
             continue
         seen_ids.add(it["id"])
         norm = normalize_title(it["title"])
+        if exclude_norms and any(similar(norm, e) for e in exclude_norms):
+            continue
         for c in clusters:
             if similar(norm, c["norm"]):
-                c["sources"].add(it["source"])
-                # prefer the member with a summary as representative
-                if not c["rep"]["summary"] and it["summary"]:
-                    c["rep"]["summary"] = it["summary"]
+                c["members"].append(it)
                 break
         else:
-            clusters.append({"norm": norm, "rep": dict(it), "sources": {it["source"]}})
+            clusters.append({"norm": norm, "members": [it]})
     for c in clusters:
-        age_h = max(0.0, (now - c["rep"]["_when"]).total_seconds() / 3600)
+        head = c["members"][0]
+        c["sources"] = {m["source"] for m in c["members"]}
+        age_h = max(0.0, (now - head["_when"]).total_seconds() / 3600)
         recency = max(0.0, 1 - age_h / RECENCY_HOURS)
         coverage = min(len(c["sources"]) - 1, 3) * 0.6
-        c["score"] = (recency + coverage) * c["rep"]["_weight"]
-    clusters.sort(key=lambda c: (c["score"], c["rep"]["_when"]), reverse=True)
+        c["score"] = (recency + coverage) * head["_weight"]
+        c["_when"] = head["_when"]
+    clusters.sort(key=lambda c: (c["score"], c["_when"]), reverse=True)
     picked, per_source = [], {}
     for c in clusters:
-        src = c["rep"]["source"]
-        if per_source.get(src, 0) >= PER_SOURCE_CAP:
+        lead = next((m for m in c["members"] if per_source.get(m["source"], 0) < PER_SOURCE_CAP), None)
+        if lead is None:
             continue
-        per_source[src] = per_source.get(src, 0) + 1
-        picked.append(c)
+        lead = dict(lead)
+        if not lead["summary"]:
+            lead["summary"] = next((m["summary"] for m in c["members"] if m["summary"]), "")
+        per_source[lead["source"]] = per_source.get(lead["source"], 0) + 1
+        picked.append(lead)
         if len(picked) >= cap:
             break
     public = ("id", "title", "source", "url", "publishedAt", "summary", "lang")
-    return [{k: c["rep"][k] for k in public} for c in picked]
+    return [{k: it[k] for k in public} for it in picked]
 
 
 def fetch_feed(feed: Feed, session: requests.Session | None = None) -> bytes:
@@ -155,55 +177,51 @@ def fetch_feed(feed: Feed, session: requests.Session | None = None) -> bytes:
     return r.content
 
 
-def collect_category(feeds: list[Feed], fetch=fetch_feed, now: datetime | None = None,
-                     exclude_ids: set[str] | None = None, cache: dict | None = None):
-    """Fetch all feeds of a category concurrently. Returns (items, ok_feed_count).
+def prefetch(feeds: list[Feed], fetch=fetch_feed, now: datetime | None = None) -> dict[str, list[dict] | Exception]:
+    """Fetch (concurrently) and parse every distinct feed URL exactly once.
 
-    `cache` maps feed.url -> bytes|Exception so shared feeds are fetched only once.
+    Returns {url: parsed items (no keyword filter) | Exception}.
     """
     now = now or datetime.now(timezone.utc)
-    cache = cache if cache is not None else {}
+    distinct = {f.url: f for f in feeds}
 
-    def get(feed: Feed):
-        if feed.url not in cache:
-            try:
-                cache[feed.url] = fetch(feed)
-            except Exception as exc:  # noqa: BLE001 - any failure isolates to this feed
-                cache[feed.url] = exc
-        return feed, cache[feed.url]
+    def work(feed: Feed):
+        try:
+            return feed.url, parse_entries(fetch(feed), feed, now)
+        except Exception as exc:  # noqa: BLE001 - any failure isolates to this feed
+            return feed.url, exc
 
     with ThreadPoolExecutor(max_workers=8) as ex:
-        results = list(ex.map(get, feeds))
+        return dict(ex.map(work, distinct.values()))
+
+
+def collect_category(feeds: list[Feed], parsed: dict) -> tuple[list[dict], int]:
+    """Gather a category's items from prefetched results. Returns (items, ok_feed_count)."""
     items, ok = [], 0
-    for feed, content in results:
-        if isinstance(content, Exception):
+    for feed in feeds:
+        res = parsed.get(feed.url)
+        if res is None or isinstance(res, Exception):
             continue
         ok += 1
-        items.extend(parse_feed(content, feed, now))
-    if exclude_ids:
-        items = [i for i in items if i["id"] not in exclude_ids]
+        items.extend(apply_keywords(res, feed))
     return items, ok
 
 
 def build_news(fetch=fetch_feed, now: datetime | None = None) -> dict[str, tuple[list[dict] | None, str]]:
     """Return {category: (items|None, status)}. Each category is isolated."""
     now = now or datetime.now(timezone.utc)
-    # prefetch every distinct URL once, concurrently
-    all_feeds = {f.url: f for fs in FEEDS.values() for f in fs}
-    cache: dict = {}
-    collect_category(list(all_feeds.values()), fetch=fetch, now=now, cache=cache)
+    parsed = prefetch([f for fs in FEEDS.values() for f in fs], fetch=fetch, now=now)
     out: dict = {}
-    politics_ids: set[str] = set()
+    politics_norms: list[str] = []
     for cat in ("finance", "globalPolitics", "turkeyPolitics", "turkeyDaily"):
         try:
-            items, ok = collect_category(FEEDS[cat], fetch=fetch, now=now, cache=cache,
-                                         exclude_ids=politics_ids if cat == "turkeyDaily" else None)
+            items, ok = collect_category(FEEDS[cat], parsed)
             if ok == 0:
                 out[cat] = (None, "failed")
                 continue
-            ranked = dedupe_and_rank(items, now)
+            ranked = dedupe_and_rank(items, now, exclude_norms=politics_norms if cat == "turkeyDaily" else None)
             if cat == "turkeyPolitics":
-                politics_ids = {i["id"] for i in ranked}
+                politics_norms = [normalize_title(i["title"]) for i in ranked]
             out[cat] = (ranked, "ok")
         except Exception:  # noqa: BLE001
             out[cat] = (None, "failed")

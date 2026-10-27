@@ -10,7 +10,9 @@ Verified 2026-10-27:
 """
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -85,13 +87,19 @@ INDICES = [("^GSPC", "SPX", "S&P 500"), ("^NDX", "NDX", "Nasdaq 100"),
            ("^DJI", "DJI", "Dow Jones"), ("XU100.IS", "XU100", "BIST 100")]
 
 
-def build_indices(fetch=yahoo_quote) -> list[dict]:
-    out = []
-    for ys, sym, name in INDICES:
+def _fetch_all(fetch, specs) -> list[dict]:
+    """Fetch quotes concurrently, keep order, skip individual failures."""
+    def one(spec):
         try:
-            out.append(fetch(ys, sym, name))
-        except Exception:  # noqa: BLE001 - one index failing keeps the others
-            continue
+            return fetch(*spec)
+        except Exception:  # noqa: BLE001 - one symbol failing keeps the others
+            return None
+    with ThreadPoolExecutor(max_workers=len(specs)) as ex:
+        return [q for q in ex.map(one, specs) if q]
+
+
+def build_indices(fetch=yahoo_quote) -> list[dict]:
+    out = _fetch_all(fetch, INDICES)
     if not out:
         raise RuntimeError("no index quote available")
     return out
@@ -127,12 +135,7 @@ def crypto_coingecko() -> list[dict]:
 
 
 def crypto_yahoo() -> list[dict]:
-    out = []
-    for _cg, ys, sym, name in CRYPTO:
-        try:
-            out.append(yahoo_quote(ys, sym, name))
-        except Exception:  # noqa: BLE001
-            continue
+    out = _fetch_all(yahoo_quote, [(ys, sym, name) for _cg, ys, sym, name in CRYPTO])
     if not out:
         raise RuntimeError("no crypto quote available")
     return out
@@ -149,7 +152,8 @@ def parse_frankfurter_range(payload: dict) -> dict:
     last = days[-1]
     price = float(rates[last]["TRY"])
     prev = float(rates[days[-2]]["TRY"]) if len(days) >= 2 else None
-    as_of = datetime.fromisoformat(last).replace(tzinfo=timezone.utc) + timedelta(hours=15)  # ECB ~16:00 CET
+    # ECB reference rates publish ~16:00 Europe/Berlin (14:00 UTC in CEST, 15:00 UTC in CET)
+    as_of = datetime.fromisoformat(last).replace(hour=16, tzinfo=ZoneInfo("Europe/Berlin"))
     return make_quote("USDTRY", "US Dollar / Turkish Lira", price, prev, as_of)
 
 

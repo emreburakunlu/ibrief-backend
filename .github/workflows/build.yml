@@ -2,7 +2,10 @@ name: Build and deploy brief
 
 on:
   schedule:
-    - cron: "0 3 * * *"   # 03:00 UTC daily; GitHub may start scheduled runs late (sometimes 15-60+ min)
+    # three runs a day (UTC); GitHub may start scheduled runs late (sometimes 15-60+ min)
+    - cron: "0 3 * * *"
+    - cron: "0 10 * * *"
+    - cron: "0 16 * * *"
   workflow_dispatch:
 
 permissions:
