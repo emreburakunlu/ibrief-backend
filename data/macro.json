@@ -1,0 +1,271 @@
+{
+ "_note": "Verified 2026-10-27: FOMC from federalreserve.gov/monetarypolicy/fomccalendars.htm (date = decision day, 2nd day of meeting; 2027 dates are tentative per the Fed); CPI and jobs from bls.gov/schedule/news_release/{cpi,empsit}.htm. Covers Nov 2026-Dec 2027. Update a few times a year.",
+ "events": [
+  {
+   "id": "fomc-2026-10-28",
+   "title": "FOMC rate decision",
+   "date": "2026-10-28",
+   "kind": "fomc",
+   "summary": "Federal Reserve policy meeting (Oct 27-28); statement and press conference on the second day."
+  },
+  {
+   "id": "jobs-2026-11-06",
+   "title": "US jobs report",
+   "date": "2026-11-06",
+   "kind": "jobs",
+   "summary": "Employment Situation for Oct 2026, 08:30 ET."
+  },
+  {
+   "id": "cpi-2026-11-10",
+   "title": "US CPI release",
+   "date": "2026-11-10",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Oct 2026, 08:30 ET."
+  },
+  {
+   "id": "jobs-2026-12-04",
+   "title": "US jobs report",
+   "date": "2026-12-04",
+   "kind": "jobs",
+   "summary": "Employment Situation for Nov 2026, 08:30 ET."
+  },
+  {
+   "id": "fomc-2026-12-09",
+   "title": "FOMC rate decision",
+   "date": "2026-12-09",
+   "kind": "fomc",
+   "summary": "Federal Reserve policy meeting (Dec 8-9); statement and press conference on the second day."
+  },
+  {
+   "id": "cpi-2026-12-10",
+   "title": "US CPI release",
+   "date": "2026-12-10",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Nov 2026, 08:30 ET."
+  },
+  {
+   "id": "jobs-2027-01-08",
+   "title": "US jobs report",
+   "date": "2027-01-08",
+   "kind": "jobs",
+   "summary": "Employment Situation for Dec 2026, 08:30 ET."
+  },
+  {
+   "id": "cpi-2027-01-13",
+   "title": "US CPI release",
+   "date": "2027-01-13",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Dec 2026, 08:30 ET."
+  },
+  {
+   "id": "fomc-2027-01-27",
+   "title": "FOMC rate decision",
+   "date": "2027-01-27",
+   "kind": "fomc",
+   "summary": "Federal Reserve policy meeting (Jan 26-27); statement and press conference on the second day."
+  },
+  {
+   "id": "jobs-2027-02-05",
+   "title": "US jobs report",
+   "date": "2027-02-05",
+   "kind": "jobs",
+   "summary": "Employment Situation for Jan 2027, 08:30 ET."
+  },
+  {
+   "id": "cpi-2027-02-11",
+   "title": "US CPI release",
+   "date": "2027-02-11",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Jan 2027, 08:30 ET."
+  },
+  {
+   "id": "jobs-2027-03-05",
+   "title": "US jobs report",
+   "date": "2027-03-05",
+   "kind": "jobs",
+   "summary": "Employment Situation for Feb 2027, 08:30 ET."
+  },
+  {
+   "id": "cpi-2027-03-10",
+   "title": "US CPI release",
+   "date": "2027-03-10",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Feb 2027, 08:30 ET."
+  },
+  {
+   "id": "fomc-2027-03-17",
+   "title": "FOMC rate decision",
+   "date": "2027-03-17",
+   "kind": "fomc",
+   "summary": "Federal Reserve policy meeting (Mar 16-17); statement and press conference on the second day."
+  },
+  {
+   "id": "jobs-2027-04-02",
+   "title": "US jobs report",
+   "date": "2027-04-02",
+   "kind": "jobs",
+   "summary": "Employment Situation for Mar 2027, 08:30 ET."
+  },
+  {
+   "id": "cpi-2027-04-13",
+   "title": "US CPI release",
+   "date": "2027-04-13",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Mar 2027, 08:30 ET."
+  },
+  {
+   "id": "fomc-2027-04-28",
+   "title": "FOMC rate decision",
+   "date": "2027-04-28",
+   "kind": "fomc",
+   "summary": "Federal Reserve policy meeting (Apr 27-28); statement and press conference on the second day."
+  },
+  {
+   "id": "jobs-2027-05-07",
+   "title": "US jobs report",
+   "date": "2027-05-07",
+   "kind": "jobs",
+   "summary": "Employment Situation for Apr 2027, 08:30 ET."
+  },
+  {
+   "id": "cpi-2027-05-12",
+   "title": "US CPI release",
+   "date": "2027-05-12",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Apr 2027, 08:30 ET."
+  },
+  {
+   "id": "jobs-2027-06-04",
+   "title": "US jobs report",
+   "date": "2027-06-04",
+   "kind": "jobs",
+   "summary": "Employment Situation for May 2027, 08:30 ET."
+  },
+  {
+   "id": "fomc-2027-06-09",
+   "title": "FOMC rate decision",
+   "date": "2027-06-09",
+   "kind": "fomc",
+   "summary": "Federal Reserve policy meeting (Jun 8-9); statement and press conference on the second day."
+  },
+  {
+   "id": "cpi-2027-06-10",
+   "title": "US CPI release",
+   "date": "2027-06-10",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for May 2027, 08:30 ET."
+  },
+  {
+   "id": "jobs-2027-07-02",
+   "title": "US jobs report",
+   "date": "2027-07-02",
+   "kind": "jobs",
+   "summary": "Employment Situation for Jun 2027, 08:30 ET."
+  },
+  {
+   "id": "cpi-2027-07-14",
+   "title": "US CPI release",
+   "date": "2027-07-14",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Jun 2027, 08:30 ET."
+  },
+  {
+   "id": "fomc-2027-07-28",
+   "title": "FOMC rate decision",
+   "date": "2027-07-28",
+   "kind": "fomc",
+   "summary": "Federal Reserve policy meeting (Jul 27-28); statement and press conference on the second day."
+  },
+  {
+   "id": "jobs-2027-08-06",
+   "title": "US jobs report",
+   "date": "2027-08-06",
+   "kind": "jobs",
+   "summary": "Employment Situation for Jul 2027, 08:30 ET."
+  },
+  {
+   "id": "cpi-2027-08-11",
+   "title": "US CPI release",
+   "date": "2027-08-11",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Jul 2027, 08:30 ET."
+  },
+  {
+   "id": "jobs-2027-09-03",
+   "title": "US jobs report",
+   "date": "2027-09-03",
+   "kind": "jobs",
+   "summary": "Employment Situation for Aug 2027, 08:30 ET."
+  },
+  {
+   "id": "cpi-2027-09-14",
+   "title": "US CPI release",
+   "date": "2027-09-14",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Aug 2027, 08:30 ET."
+  },
+  {
+   "id": "fomc-2027-09-15",
+   "title": "FOMC rate decision",
+   "date": "2027-09-15",
+   "kind": "fomc",
+   "summary": "Federal Reserve policy meeting (Sep 14-15); statement and press conference on the second day."
+  },
+  {
+   "id": "jobs-2027-10-08",
+   "title": "US jobs report",
+   "date": "2027-10-08",
+   "kind": "jobs",
+   "summary": "Employment Situation for Sep 2027, 08:30 ET."
+  },
+  {
+   "id": "cpi-2027-10-14",
+   "title": "US CPI release",
+   "date": "2027-10-14",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Sep 2027, 08:30 ET."
+  },
+  {
+   "id": "fomc-2027-10-27",
+   "title": "FOMC rate decision",
+   "date": "2027-10-27",
+   "kind": "fomc",
+   "summary": "Federal Reserve policy meeting (Oct 26-27); statement and press conference on the second day."
+  },
+  {
+   "id": "jobs-2027-11-05",
+   "title": "US jobs report",
+   "date": "2027-11-05",
+   "kind": "jobs",
+   "summary": "Employment Situation for Oct 2027, 08:30 ET."
+  },
+  {
+   "id": "cpi-2027-11-10",
+   "title": "US CPI release",
+   "date": "2027-11-10",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Oct 2027, 08:30 ET."
+  },
+  {
+   "id": "jobs-2027-12-03",
+   "title": "US jobs report",
+   "date": "2027-12-03",
+   "kind": "jobs",
+   "summary": "Employment Situation for Nov 2027, 08:30 ET."
+  },
+  {
+   "id": "fomc-2027-12-08",
+   "title": "FOMC rate decision",
+   "date": "2027-12-08",
+   "kind": "fomc",
+   "summary": "Federal Reserve policy meeting (Dec 7-8); statement and press conference on the second day."
+  },
+  {
+   "id": "cpi-2027-12-10",
+   "title": "US CPI release",
+   "date": "2027-12-10",
+   "kind": "cpi",
+   "summary": "Consumer Price Index for Nov 2027, 08:30 ET."
+  }
+ ]
+}

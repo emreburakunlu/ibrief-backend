@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>T</title>
+<item><title>Fed holds rates steady &amp; signals patience</title><link>https://example.com/a?utm_source=x</link>
+<pubDate>Tue, 27 Oct 2026 06:00:00 GMT</pubDate>
+<description>&lt;p&gt;The Fed &lt;b&gt;held&lt;/b&gt; rates&nbsp;steady.&lt;/p&gt;&lt;script&gt;evil()&lt;/script&gt;</description></item>
+<item><title>Old story</title><link>https://example.com/old</link><pubDate>Mon, 20 Oct 2026 06:00:00 GMT</pubDate><description>x</description></item>
+<item><title>Fed holds rates steady, signals patience</title><link>https://other.com/b</link>
+<pubDate>Tue, 27 Oct 2026 05:00:00 GMT</pubDate><description>dup</description></item>
+<item><title>Unrelated oil story</title><link>https://example.com/oil</link><pubDate>Tue, 27 Oct 2026 04:00:00 GMT</pubDate><description>oil</description></item>
+</channel></rss>

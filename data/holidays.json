@@ -1,0 +1,287 @@
+{
+ "_note": "Verified 2026-10-27: US = NYSE holiday calendar (nyse.com/trade/hours-calendars); TR = date.nager.at public holidays. 2027 Bayram dates are tentative (lunar calendar). Half days (arife, early closes) not listed.",
+ "holidays": [
+  {
+   "id": "tr-2026-01-01",
+   "date": "2026-01-01",
+   "country": "TR",
+   "name": "New Year's Day"
+  },
+  {
+   "id": "us-2026-01-01",
+   "date": "2026-01-01",
+   "country": "US",
+   "name": "New Year's Day - US markets closed"
+  },
+  {
+   "id": "us-2026-01-19",
+   "date": "2026-01-19",
+   "country": "US",
+   "name": "Martin Luther King Jr. Day - US markets closed"
+  },
+  {
+   "id": "us-2026-02-16",
+   "date": "2026-02-16",
+   "country": "US",
+   "name": "Presidents Day - US markets closed"
+  },
+  {
+   "id": "tr-2026-03-20",
+   "date": "2026-03-20",
+   "country": "TR",
+   "name": "Ramadan Bayram (day 1)"
+  },
+  {
+   "id": "tr-2026-03-21",
+   "date": "2026-03-21",
+   "country": "TR",
+   "name": "Ramadan Bayram (day 2)"
+  },
+  {
+   "id": "tr-2026-03-22",
+   "date": "2026-03-22",
+   "country": "TR",
+   "name": "Ramadan Bayram (day 3)"
+  },
+  {
+   "id": "us-2026-04-03",
+   "date": "2026-04-03",
+   "country": "US",
+   "name": "Good Friday - US markets closed"
+  },
+  {
+   "id": "tr-2026-04-23",
+   "date": "2026-04-23",
+   "country": "TR",
+   "name": "National Sovereignty and Children's Day"
+  },
+  {
+   "id": "tr-2026-05-01",
+   "date": "2026-05-01",
+   "country": "TR",
+   "name": "Labour Day"
+  },
+  {
+   "id": "tr-2026-05-19",
+   "date": "2026-05-19",
+   "country": "TR",
+   "name": "Commemoration of Ataturk, Youth and Sports Day"
+  },
+  {
+   "id": "us-2026-05-25",
+   "date": "2026-05-25",
+   "country": "US",
+   "name": "Memorial Day - US markets closed"
+  },
+  {
+   "id": "tr-2026-05-27",
+   "date": "2026-05-27",
+   "country": "TR",
+   "name": "Kurban Bayram (day 1)"
+  },
+  {
+   "id": "tr-2026-05-28",
+   "date": "2026-05-28",
+   "country": "TR",
+   "name": "Kurban Bayram (day 2)"
+  },
+  {
+   "id": "tr-2026-05-29",
+   "date": "2026-05-29",
+   "country": "TR",
+   "name": "Kurban Bayram (day 3)"
+  },
+  {
+   "id": "tr-2026-05-30",
+   "date": "2026-05-30",
+   "country": "TR",
+   "name": "Kurban Bayram (day 4)"
+  },
+  {
+   "id": "us-2026-06-19",
+   "date": "2026-06-19",
+   "country": "US",
+   "name": "Juneteenth - US markets closed"
+  },
+  {
+   "id": "us-2026-07-03",
+   "date": "2026-07-03",
+   "country": "US",
+   "name": "Independence Day (observed) - US markets closed"
+  },
+  {
+   "id": "tr-2026-07-15",
+   "date": "2026-07-15",
+   "country": "TR",
+   "name": "Democracy and National Unity Day"
+  },
+  {
+   "id": "tr-2026-08-30",
+   "date": "2026-08-30",
+   "country": "TR",
+   "name": "Victory Day"
+  },
+  {
+   "id": "us-2026-09-07",
+   "date": "2026-09-07",
+   "country": "US",
+   "name": "Labor Day - US markets closed"
+  },
+  {
+   "id": "tr-2026-10-29",
+   "date": "2026-10-29",
+   "country": "TR",
+   "name": "Republic Day"
+  },
+  {
+   "id": "us-2026-11-26",
+   "date": "2026-11-26",
+   "country": "US",
+   "name": "Thanksgiving Day - US markets closed"
+  },
+  {
+   "id": "us-2026-12-25",
+   "date": "2026-12-25",
+   "country": "US",
+   "name": "Christmas Day - US markets closed"
+  },
+  {
+   "id": "tr-2027-01-01",
+   "date": "2027-01-01",
+   "country": "TR",
+   "name": "New Year's Day"
+  },
+  {
+   "id": "us-2027-01-01",
+   "date": "2027-01-01",
+   "country": "US",
+   "name": "New Year's Day - US markets closed"
+  },
+  {
+   "id": "us-2027-01-18",
+   "date": "2027-01-18",
+   "country": "US",
+   "name": "Martin Luther King Jr. Day - US markets closed"
+  },
+  {
+   "id": "us-2027-02-15",
+   "date": "2027-02-15",
+   "country": "US",
+   "name": "Presidents Day - US markets closed"
+  },
+  {
+   "id": "tr-2027-03-10",
+   "date": "2027-03-10",
+   "country": "TR",
+   "name": "Ramadan Bayram (day 1)"
+  },
+  {
+   "id": "tr-2027-03-11",
+   "date": "2027-03-11",
+   "country": "TR",
+   "name": "Ramadan Bayram (day 2)"
+  },
+  {
+   "id": "tr-2027-03-12",
+   "date": "2027-03-12",
+   "country": "TR",
+   "name": "Ramadan Bayram (day 3)"
+  },
+  {
+   "id": "us-2027-03-26",
+   "date": "2027-03-26",
+   "country": "US",
+   "name": "Good Friday - US markets closed"
+  },
+  {
+   "id": "tr-2027-04-23",
+   "date": "2027-04-23",
+   "country": "TR",
+   "name": "National Sovereignty and Children's Day"
+  },
+  {
+   "id": "tr-2027-05-01",
+   "date": "2027-05-01",
+   "country": "TR",
+   "name": "Labour Day"
+  },
+  {
+   "id": "tr-2027-05-16",
+   "date": "2027-05-16",
+   "country": "TR",
+   "name": "Kurban Bayram (day 1)"
+  },
+  {
+   "id": "tr-2027-05-17",
+   "date": "2027-05-17",
+   "country": "TR",
+   "name": "Kurban Bayram (day 2)"
+  },
+  {
+   "id": "tr-2027-05-18",
+   "date": "2027-05-18",
+   "country": "TR",
+   "name": "Kurban Bayram (day 3)"
+  },
+  {
+   "id": "tr-2027-05-19",
+   "date": "2027-05-19",
+   "country": "TR",
+   "name": "Kurban Bayram (day 4) / Youth and Sports Day"
+  },
+  {
+   "id": "us-2027-05-31",
+   "date": "2027-05-31",
+   "country": "US",
+   "name": "Memorial Day - US markets closed"
+  },
+  {
+   "id": "us-2027-06-18",
+   "date": "2027-06-18",
+   "country": "US",
+   "name": "Juneteenth (observed) - US markets closed"
+  },
+  {
+   "id": "us-2027-07-05",
+   "date": "2027-07-05",
+   "country": "US",
+   "name": "Independence Day (observed) - US markets closed"
+  },
+  {
+   "id": "tr-2027-07-15",
+   "date": "2027-07-15",
+   "country": "TR",
+   "name": "Democracy and National Unity Day"
+  },
+  {
+   "id": "tr-2027-08-30",
+   "date": "2027-08-30",
+   "country": "TR",
+   "name": "Victory Day"
+  },
+  {
+   "id": "us-2027-09-06",
+   "date": "2027-09-06",
+   "country": "US",
+   "name": "Labor Day - US markets closed"
+  },
+  {
+   "id": "tr-2027-10-29",
+   "date": "2027-10-29",
+   "country": "TR",
+   "name": "Republic Day"
+  },
+  {
+   "id": "us-2027-11-25",
+   "date": "2027-11-25",
+   "country": "US",
+   "name": "Thanksgiving Day - US markets closed"
+  },
+  {
+   "id": "us-2027-12-24",
+   "date": "2027-12-24",
+   "country": "US",
+   "name": "Christmas Day (observed) - US markets closed"
+  }
+ ]
+}
