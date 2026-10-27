@@ -4,12 +4,15 @@ from __future__ import annotations
 import calendar
 import hashlib
 import html
+import logging
 import re
 import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from difflib import SequenceMatcher
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+
+log = logging.getLogger(__name__)
 
 import feedparser
 import requests
@@ -78,6 +81,23 @@ def similar(a_norm: str, b_norm: str) -> bool:
     return False
 
 
+def clean_link(link: str | None) -> str | None:
+    """Return an absolute http(s) URL with a host, or None. '//host/x' resolves to https."""
+    if not link:
+        return None
+    link = link.strip()
+    if link.startswith("//"):
+        link = "https:" + link
+    try:
+        parts = urlsplit(link)
+        host = parts.hostname
+    except ValueError:
+        return None
+    if parts.scheme.lower() not in ("http", "https") or not host:
+        return None
+    return link
+
+
 def _entry_time(entry) -> datetime | None:
     for key in ("published_parsed", "updated_parsed"):
         st = entry.get(key)
@@ -95,19 +115,26 @@ def parse_entries(content: bytes, feed: Feed, now: datetime) -> list[dict]:
     parsed = feedparser.parse(content)
     cutoff = now - timedelta(hours=RECENCY_HOURS)
     out = []
+    bad_links = 0
     for e in parsed.entries:
         title = strip_html(e.get("title"), 200)
-        link = e.get("link")
+        raw_link = e.get("link")
         when = _entry_time(e)
-        if not title or not link or not when:
+        if not title or not raw_link or not when:
+            continue
+        link = clean_link(raw_link)
+        if link is None:
+            bad_links += 1
             continue
         if when < cutoff or when > now + timedelta(hours=1):
             continue
         out.append({
-            "id": item_id(link), "title": title, "source": feed.source, "url": link.strip(),
+            "id": item_id(link), "title": title, "source": feed.source, "url": link,
             "publishedAt": iso(when), "summary": strip_html(e.get("summary") or e.get("description")),
             "lang": feed.lang, "_when": when, "_weight": feed.weight,
         })
+    if bad_links:
+        log.warning("%s: dropped %d item(s) with invalid links", feed.source, bad_links)
     return out
 
 

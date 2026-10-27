@@ -236,3 +236,29 @@ def test_frankfurter_asof_dst():
 def test_summary_has_no_entities():
     out = news.strip_html("Tom &amp;amp; Jerry &quot;x&quot; &#39;y&#39; &lt;b&gt;z")
     assert "&amp;" not in out and "&quot;" not in out and "&#39;" not in out
+
+
+def _feed_xml(link: str) -> bytes:
+    return (
+        '<?xml version="1.0"?><rss version="2.0"><channel><title>t</title><item>'
+        f"<title>Some headline</title><link>{link}</link>"
+        "<pubDate>Mon, 02 Jun 2025 10:00:00 GMT</pubDate></item></channel></rss>"
+    ).encode()
+
+
+@pytest.mark.parametrize("link", ["/relative/path", "javascript:alert(1)", "mailto:a@b.com"])
+def test_invalid_links_dropped(link):
+    now = datetime(2025, 6, 2, 12, 0, tzinfo=timezone.utc)
+    assert news.parse_entries(_feed_xml(link), FEED, now) == []
+
+
+def test_protocol_relative_link_resolved_to_https():
+    now = datetime(2025, 6, 2, 12, 0, tzinfo=timezone.utc)
+    items = news.parse_entries(_feed_xml("//example.com/a"), FEED, now)
+    assert [i["url"] for i in items] == ["https://example.com/a"]
+
+
+def test_normal_https_link_kept():
+    now = datetime(2025, 6, 2, 12, 0, tzinfo=timezone.utc)
+    items = news.parse_entries(_feed_xml("https://example.com/a?x=1"), FEED, now)
+    assert [i["url"] for i in items] == ["https://example.com/a?x=1"]
