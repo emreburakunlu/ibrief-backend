@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
@@ -11,6 +12,7 @@ from . import calendar_data, markets, news
 
 NEWS_CATEGORIES = ("finance", "globalPolitics", "turkeyPolitics", "turkeyDaily")
 SITE_DIR = Path(__file__).resolve().parent.parent / "site"
+STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
 PLACEHOLDER = """<!doctype html><meta charset="utf-8"><title>iBrief backend</title>
 <p>Generic data feed for a personal app. <a href="brief.json">brief.json</a></p>
@@ -69,6 +71,8 @@ def write_site(brief: dict, site_dir: Path = SITE_DIR) -> Path:
     out = site_dir / "brief.json"
     out.write_text(json.dumps(brief, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (site_dir / "index.html").write_text(PLACEHOLDER, encoding="utf-8")
+    for page in STATIC_DIR.glob("*.html"):
+        shutil.copy(page, site_dir / page.name)
     return out
 
 
